@@ -1,6 +1,7 @@
 const chance = require('chance').Chance();
 
 class User {
+    
     constructor(id) {
         this.name = chance.first();
         this.room = null;

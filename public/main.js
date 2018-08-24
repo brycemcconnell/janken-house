@@ -44,14 +44,14 @@ socket.on('room_list', function(rooms) {
     Object.entries(rooms).forEach(room => {
         const roomName = room[0];
         const roomData = room[1];
-        const playerIsInRoom = Object.values(roomData.users).some(user_name => user_name == player.name);
+        const playerIsInRoom = Object.values(roomData.users).some(user => user.name == player.name);
         roomListContainer.innerHTML += addRoom(roomName, user_count(roomData.users), roomData.max_user_count, playerIsInRoom);
     });
 });
 
 document.getElementById('createRoom').onsubmit = function(e) {
     e.preventDefault();
-    let roomNameVal = document.getElementById("roomName").value;
+    let roomNameVal = document.getElementById("roomName").value ;
     socket.emit("create_room", `${roomNameVal}`);
     document.getElementById("roomName").value = '';
     return false;

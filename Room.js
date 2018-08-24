@@ -1,9 +1,10 @@
 class Room {
-    constructor(name, max_user_count) {
+    
+    constructor(name, type) {
         this.name = name;
         this.users = {};
-        this.max_user_count = max_user_count;
-       
+        this.type = type.name;
+        this.max_user_count = type.max_user_count;
     }
 }
 
