@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Code Share</title>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+		}
+	</style>
+	<link href="styles.css" rel="stylesheet" type="text/css" >
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+</head>
+<body>
+	<div id="wrapper">
+		Hello madoka!
+		Hi.bryce!
+		I fill with love for you.
+		I satisfy consern I study english
+		<div class="online_count-wrapper">
+			<span>Currently Online: </span>
+			<span id="onlineCount">0</span>
+		</div>
+
+		<table> <!-- ********* Game room list start ********* -->
+			<thead>
+				<tr>
+					<td>
+						<form action="" id="createRoom">
+							<input id="roomName" autocomplete="off" /><button>Create Room</button>
+						</form>
+					</td>
+				</tr>
+			</thead>
+			<tbody id="room_list">
+				<!-- Room list contents -->
+			</tbody>
+		</table> <!-- ********* Game room list end ********* -->
+
+		<div class="game_veiw_wrap">
+			<div id="player_area" class="person_wrap">
+				<!-- Player display area -->
+			</div>
+			<div id="game_stage">
+				<div id="lose" class="game_lose"></div>
+				<div id="win" class="game_win">
+					<div class="winstar s_01"></div>
+					<div class="winstar s_02"></div>
+					<div class="winstar s_03"></div>
+					<div class="winstar s_04"></div>
+				</div>
+				<div class="stage_type02">
+					<img class="choice_img rock" src="http://dflamingo.net/jgame/img/stageico_type01.png">
+					<img class="choice_img scissors" src="http://dflamingo.net/jgame/img/stageico_type02.png">
+					<img class="choice_img paper" src="http://dflamingo.net/jgame/img/stageico_type03.png">
+				</div>
+				
+			</div>
+
+			<div id="me_wrap">
+				<div class="choice jgame_type type01" data-choice="rock">ぐー</div>
+				<div class="choice jgame_type type02 select_type" data-choice="scissors">チョキ</div>
+				<div class="choice jgame_type type03" data-choice="paper" >パー</div>
+			</div>
+			<div class="me_ttl">YOUR SELECT</div>
+		</div>		
+
+	</div>
+	<script src="main.js"></script>
+	<script>
+	
+	</script>
+</body>
+</html>
