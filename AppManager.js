@@ -15,7 +15,7 @@ class AppManager {
         this.io.on('connection', (socket) => {
 
             this.addUser(socket);
-            
+
             socket.on('disconnect', () => {
                 this.removeUser(socket);
             });
@@ -32,21 +32,8 @@ class AppManager {
                 this.leaveRoom(socket, roomName);
             });
 
-            socket.on('delete_room', (roomName) => { // @TODO
-                if (rooms[roomName]) {
-                    Object.keys(rooms[roomName].users).forEach(user => {
-                        users[user].room = null;
-                        io.sockets.connected[user].leave(roomName);
-                        io.to(user).emit('change_client_room', null);
-                    });
-                    socket.emit('change_client_room', null);
-                    delete rooms[roomName];
-                    socket.emit('admin_msg', `Deleted room ${roomName}.`);
-                    // updateRoomList(io);
-                    console.log(`Room ${roomName} was deleted by ${socket.id}`);
-                    return;
-                }
-                socket.emit('admin_msg', `Sorry the room ${roomName} doesn't exist, try a different name.`);
+            socket.on('delete_room', (roomName) => {
+                this.deleteRoom(socket, roomName);
             });
 
 
@@ -96,7 +83,7 @@ class AppManager {
         const user = this.userManager.add(socket);
 
         // Send the list of rooms to the new user
-        this.roomManager.updateClientRoomList(socket);
+        this.roomManager.sendRoomDataToClient(socket);
 
         // Update the online count for all users
         this.userManager.updateClientOnlineCount(this.io);
@@ -121,10 +108,10 @@ class AppManager {
         this.userManager.updateClientOnlineCount(this.io);
 
         // Remove user from all rooms
-        this.roomManager.kickAll(socket);
+        this.roomManager.kickUserFromAllRooms(socket);
         
         // Send the list of rooms to the each user
-        this.roomManager.updateClientRoomList(this.io);
+        this.roomManager.sendRoomDataToClient(this.io);
 
         return user;
     }
@@ -159,7 +146,7 @@ class AppManager {
         this.userManager.setUserRoom(socket, roomName);
 
         // Update the room list of everyone
-        this.roomManager.updateClientRoomList(this.io);
+        this.roomManager.sendRoomDataToClient(this.io);
 
         // Update everyone inside the room
         this.roomManager.updateRoom(roomName);
@@ -168,7 +155,7 @@ class AppManager {
         // socket.emit('update_players', users[socket.id], null);
         
         // Send the list of rooms to the each user
-        this.roomManager.updateClientRoomList(this.io);
+        this.roomManager.sendRoomDataToClient(this.io);
 
         return room;
     }
@@ -205,7 +192,7 @@ class AppManager {
         this.userManager.setUserRoom(socket, roomName);
 
         // Update the room list of everyone
-        this.roomManager.updateClientRoomList(this.io);
+        this.roomManager.sendRoomDataToClient(this.io);
 
         // Update everyone inside the room
         this.roomManager.updateRoom(roomName);
@@ -239,12 +226,58 @@ class AppManager {
         const room = this.roomManager.kick(socket, roomName);
 
         // Update room list for all users
-        this.roomManager.updateClientRoomList(this.io);
+        this.roomManager.sendRoomDataToClient(this.io);
 
         // Update everyone inside the room
         this.roomManager.updateRoom(roomName);
 
         return room;
+    }
+
+    /**
+     * 
+     * @param {SocketIO.Socket} socket 
+     * @param {string} roomName 
+     * @returns {Room|false} A copy of the room that was deleted
+     */
+    deleteRoom(socket, roomName) {
+
+        const room = this.roomManager.getRoom(roomName);
+         // if there is no room found
+         if (room == null) {
+            socket.emit('admin_msg', `You cannot delete ${roomName} because it doesn't exist.`);
+            return false;
+        }
+
+        // Get a list of users in the room
+        const roomUsers = this.roomManager.getUsersInRoom(roomName);
+
+        const roomUserSockets = this.getGroupOfSockets(roomUsers);
+
+        // Kick all the users from that room
+        this.roomManager.kickGroupOfSocketsFromRoom(roomUserSockets, roomName);
+
+        // Set all user rooms back to null
+        this.userManager.unsetGroupOfSocketsFromRoom(roomUserSockets, roomName);
+
+        // Delete the room from the room manager
+        this.roomManager.delete(roomName, socket);
+
+        // Update room list for all users
+        this.roomManager.sendRoomDataToClient(this.io);
+
+        return room;
+    }
+
+    getSocket() {
+
+    }
+
+    getGroupOfSockets(group) {
+        const socketGroup = Object.values(group).map(user => {
+            return this.io.sockets.connected[user.socket_id];
+        });
+        return socketGroup;       
     }
 }
 

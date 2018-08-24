@@ -1,3 +1,9 @@
+#wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
 .online_count-wrapper {
     position: absolute;
     top: 0;
@@ -99,6 +105,7 @@
     padding:80px;
     text-align:center;
     position:relative;
+    overflow: hidden;
 }
 .game_lose{
     position:absolute;
@@ -201,4 +208,27 @@
 
 .choice_img-active {
     display: inline-block;
+}
+
+.console {
+    margin-top: auto;
+    font-family: 'Ubuntu mono', monospace;
+    border: 8px inset gold;
+    background-color: #224;
+    color: #fff;
+    padding: 10px;
+    height: 20vh;
+    max-height: 20vh;
+    overflow-y: auto;
+}
+
+.console > div:last-child {
+    padding-bottom: 20px;
+}
+
+.console-time {
+    font-size: 16px;
+    margin-right: 20px;
+    border-right: 1px solid gold;
+    padding-right: 20px;
 }

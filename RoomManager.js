@@ -4,11 +4,23 @@ const Room = require('./Room.js').Room;
 const RoomType = require('./RoomType.js').RoomType;
 const roomTypeList = require('./RoomType.js').roomTypeList;
 
-
+/**
+ * RULE: Room manager cannot mutate user data
+ * RULE: Room manager cannot access io directly
+ */
 class RoomManager {
 
     constructor() {
         this.rooms = {};
+    }
+
+    /**
+     * 
+     * @param {string} name 
+     * @returns {object} List of users as object
+     */
+    getUsersInRoom(name) {
+        return this.rooms[name].users;
     }
 
     /**
@@ -20,15 +32,33 @@ class RoomManager {
      */
     add(name, type = roomTypeList.Janken, socket) {
         this.rooms[name] = new Room(name, type);
-        if (socket) console.log(`Room "${name}" was created by ${socket.id}.`);
+        if (socket) {
+            console.log(`Room "${name}" was created by ${socket.id}`);
+            socket.emit('admin_msg', `Created room ${name}`);
+        }
         return this.rooms[name];
+    }
+
+    /**
+     * 
+     * @param {string} name 
+     * @param {SocketIO.Socket|null} socket 
+     * @returns {string} The name of the deleted room
+     */
+    delete(name, socket) {
+        delete this.rooms[name];
+        if (socket) {
+            console.log(`Room "${name}" was deleted by ${socket.id}.`);
+            socket.emit('admin_msg', `Deleted room ${name}`);
+        }
+        return name;
     }
 
     /**
      * Send all room data to the specified client/s
      * @param {SocketIO.Socket} client 
      */
-    updateClientRoomList(client) {
+    sendRoomDataToClient(client) {
         client.emit('room_list', this.rooms);
     }
 
@@ -72,10 +102,16 @@ class RoomManager {
      * Loop over all rooms and remove if user reference is present
      * @param {SocketIO.Socket} socket 
      */
-    kickAll(socket) {
+    kickUserFromAllRooms(socket) {
         Object.keys(this.rooms).forEach(room => {
             this.kick(socket, room);
             
+        });
+    }
+
+    kickGroupOfSocketsFromRoom(socketGroup, name) {
+        Object.values(socketGroup).forEach(socket => {
+            this.kick(socket, name);
         });
     }
 

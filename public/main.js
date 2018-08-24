@@ -10,8 +10,10 @@ socket.on('set_player', function(serverPlayer) {
 
 socket.on('admin_msg', function(msg) {
     const el = document.createElement('div');
-    el.innerHTML = msg;
-    document.body.appendChild(el);
+    el.innerHTML = `<span class="console-time">${new Date().toTimeString()}</span><span>${msg}</span>`;
+    const consoleEl = document.getElementById('console_box');
+    consoleEl.appendChild(el);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
 });
 
 [...document.querySelectorAll('.choice')].forEach(item => {

@@ -1,5 +1,9 @@
 const User = require('./User.js').User;
 
+/**
+ * RULE: User manager cannot mutate room data
+ * RULE: User manager cannot access io directly
+ */
 class UserManager {
 
     constructor() {
@@ -126,6 +130,12 @@ class UserManager {
         socket.emit('change_client_room', roomName);
         
         return this.users[socket.id];
+    }
+
+    unsetGroupOfSocketsFromRoom(socketGroup, roomName) {
+        Object.values(socketGroup).forEach(socket => {
+            this.unsetUserRoom(socket, roomName);
+        });
     }
 }
 
