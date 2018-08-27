@@ -3,12 +3,21 @@ const Room = require('./Room.js').Room;
 const UserManager = require('./UserManager.js').UserManager;
 const RoomManager = require('./RoomManager.js').RoomManager;
 
+/**
+ * State of the server is stored inside here,
+ * Managers are responsible for only their respective parts
+ * Managers shouldn't touch sockets/io
+ */
 class AppManager {
 
     constructor(io) {
         this.io = io;
-        this.userManager = new UserManager();
-        this.roomManager = new RoomManager();
+        this.users = {};
+        this.rooms = {};
+
+
+        this.userManager = new UserManager(this.users);
+        this.roomManager = new RoomManager(this.rooms);
     }
 
     runIO() {

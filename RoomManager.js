@@ -10,8 +10,8 @@ const roomTypeList = require('./RoomType.js').roomTypeList;
  */
 class RoomManager {
 
-    constructor() {
-        this.rooms = {};
+    constructor(rooms) {
+        this.rooms = rooms;
     }
 
     /**

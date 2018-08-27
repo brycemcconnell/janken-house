@@ -6,8 +6,8 @@ const User = require('./User.js').User;
  */
 class UserManager {
 
-    constructor() {
-        this.users = {};
+    constructor(users) {
+        this.users = users;
     }
 
     /**
